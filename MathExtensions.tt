@@ -1,0 +1,56 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<# Type type = typeof(Type); #>
+namespace <#= type.Namespace #>Extensions
+{
+	public static class <#= type.Name #>Extensions
+	{
+<# foreach (var method in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public))
+{
+	var parameters = method.GetParameters().ToArray();
+
+	if (parameters.Length == 0)
+	{
+		continue;
+	}
+
+	if (parameters.Any(p => p.IsOut))
+	{
+		continue;
+	}
+
+	if (method.IsSpecialName)
+	{
+		// e.g. operators
+		// TODO: Anything we can do here?
+		continue;
+	}
+
+	if (parameters.Any(p => p.ParameterType.IsGenericType)
+		|| method.ReturnType.IsGenericType)
+	{
+		// TODO: Handle this - FullName isn't what we can use here
+		continue;
+	}
+
+	var argumentString = string.Join(", ", parameters.Select(p => $"{p.ParameterType.FullName} {p.Name}"));
+	var invokeArgumentString = string.Join(", ", parameters.Select(p => $"{p.Name}"));
+
+	var argumentTypesForCref = string.Join(", ", parameters.Select(p => $"{p.ParameterType.FullName}"));
+
+	#>
+
+
+		/// <inheritdoc cref="<#= type.FullName #>.<#= method.Name #>(<#= argumentTypesForCref #>)" />
+		public static <#= method.ReturnType.FullName #> <#= method.Name #>(this <#= argumentString #>)
+		{
+			return <#= type.FullName #>.<#= method.Name #>(<#= invokeArgumentString #>);
+		}<#
+} #> 
+	}
+}
