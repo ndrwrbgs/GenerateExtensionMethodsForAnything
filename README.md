@@ -11,7 +11,7 @@ introducing a method as follows.
 /// </summary>
 public static TOut Wrap<TIn, TOut>(this TIn input, Func<TIn, TOut> projection)
 {
-	return projection(input);
+    return projection(input);
 )
 ```
 
