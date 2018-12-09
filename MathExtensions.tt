@@ -5,7 +5,11 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-<# Type type = typeof(Type); #>
+
+
+<# Type type = typeof(Math); #>
+
+
 namespace <#= type.Namespace #>Extensions
 {
 	public static class <#= type.Name #>Extensions
